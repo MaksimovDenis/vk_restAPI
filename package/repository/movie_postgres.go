@@ -56,7 +56,7 @@ func (m *MoviePostgres) GetMovies() ([]filmoteka.MoviesWithActors, error) {
         m.id, 
         m.title, 
         m.description, 
-        m.release_date, 
+        TO_CHAR (m.release_date, 'YYYY-MM-DD') AS release_date, 
         m.rating, 
         array_agg(a.first_name || ' ' || a.last_name) AS actors
     FROM 
@@ -82,7 +82,7 @@ func (m *MoviePostgres) GetMoviesSortedByTitle() ([]filmoteka.MoviesWithActors, 
         m.id, 
         m.title, 
         m.description, 
-        m.release_date, 
+        TO_CHAR (m.release_date, 'YYYY-MM-DD') AS release_date, 	
         m.rating, 
         array_agg(a.first_name || ' ' || a.last_name) AS actors
     FROM 
@@ -108,7 +108,7 @@ func (m *MoviePostgres) GetMoviesSortedByDate() ([]filmoteka.MoviesWithActors, e
         m.id, 
         m.title, 
         m.description, 
-        m.release_date, 
+        TO_CHAR (m.release_date, 'YYYY-MM-DD') AS release_date, 			 
         m.rating, 
         array_agg(a.first_name || ' ' || a.last_name) AS actors
     FROM 
@@ -134,7 +134,7 @@ func (m *MoviePostgres) GetMovieById(movieId int) (filmoteka.MoviesWithActors, e
         m.id, 
         m.title, 
         m.description, 
-        m.release_date, 
+        TO_CHAR (m.release_date, 'YYYY-MM-DD') AS release_date, 
         m.rating, 
         array_agg(a.first_name || ' ' || a.last_name) AS actors
     FROM 

@@ -34,6 +34,7 @@ func (a *ActorPostgres) CreateActor(actor filmoteka.Actors) (int, error) {
 
 	query = fmt.Sprintf("INSERT INTO %s (first_name, last_name, gender, date_of_birth) VALUES ($1, $2, $3, $4) RETURNING id", actorsTable)
 	row = a.db.QueryRow(query, actor.FirstName, actor.LastName, actor.Gender, actor.DateOfBirth)
+
 	if err := row.Scan(&id); err != nil {
 		return 0, err
 	}
@@ -49,7 +50,7 @@ func (a *ActorPostgres) GetActors() ([]filmoteka.ActorsWithMovies, error) {
 			a.first_name, 
 			a.last_name, 
 			a.gender, 
-			a.date_of_birth, 
+			TO_CHAR(a.date_of_birth, 'YYYY-MM-DD') AS date_of_birth, 
 			array_agg(m.title) AS movies
 		FROM 
 			%s a
@@ -79,7 +80,7 @@ func (a *ActorPostgres) GetActorById(actorId int) (filmoteka.ActorsWithMovies, e
 			a.first_name, 
 			a.last_name, 
 			a.gender, 
-			a.date_of_birth, 
+			TO_CHAR(a.date_of_birth, 'YYYY-MM-DD') AS date_of_birth, 
 			array_agg(m.title) AS movies
 		FROM 
 			%s a
