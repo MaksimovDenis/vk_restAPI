@@ -11,11 +11,11 @@ type Err struct {
 	Message string `json:"message"`
 }
 
-type statusResponse struct {
+type StatusResponse struct {
 	Status string `json:"status"`
 }
 
-func newErrorResponse(w http.ResponseWriter, statusCode int, message string) {
+func NewErrorResponse(w http.ResponseWriter, statusCode int, message string) {
 	logrus.Error(message)
 	w.WriteHeader(statusCode)
 	response := map[string]interface{}{

@@ -11,13 +11,13 @@ import (
 
 func (h *Handler) handleCreateMovie(w http.ResponseWriter, r *http.Request) {
 	if err := h.checkAdminStatus(w, r); err != nil {
-		newErrorResponse(w, http.StatusForbidden, "This function is only available to the administrator")
+		NewErrorResponse(w, http.StatusForbidden, "This function is only available to the administrator")
 		return
 	}
 
 	userId, err := getUserId(r)
 	if err != nil {
-		newErrorResponse(w, http.StatusUnauthorized, "user id not found")
+		NewErrorResponse(w, http.StatusUnauthorized, "user id not found")
 		return
 	}
 
@@ -28,13 +28,13 @@ func (h *Handler) handleCreateMovie(w http.ResponseWriter, r *http.Request) {
 
 	var request movieRequest
 	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
-		newErrorResponse(w, http.StatusBadRequest, err.Error())
+		NewErrorResponse(w, http.StatusBadRequest, err.Error())
 		return
 	}
 
 	actors, err := h.service.GetActors()
 	if err != nil {
-		newErrorResponse(w, http.StatusInternalServerError, err.Error())
+		NewErrorResponse(w, http.StatusInternalServerError, err.Error())
 		return
 	}
 
@@ -53,11 +53,9 @@ func (h *Handler) handleCreateMovie(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	//TODO: ПРЕОБРАЗОВАТЬ STRING В TIME
-
 	id, err := h.service.Movies.CreateMovie(userId, request.Movie, validateActorIDs)
 	if err != nil {
-		newErrorResponse(w, http.StatusInternalServerError, err.Error())
+		NewErrorResponse(w, http.StatusInternalServerError, err.Error())
 		return
 	}
 
@@ -77,7 +75,7 @@ func (h *Handler) handleGetAllMovies(w http.ResponseWriter, r *http.Request) {
 
 	movies, err := h.service.MoviesWithActors.GetMovies()
 	if err != nil {
-		newErrorResponse(w, http.StatusInternalServerError, err.Error())
+		NewErrorResponse(w, http.StatusInternalServerError, err.Error())
 		return
 	}
 
@@ -90,7 +88,7 @@ func (h *Handler) handleGetAllMoviesSortedByTitle(w http.ResponseWriter, r *http
 
 	movies, err := h.service.MoviesWithActors.GetMoviesSortedByTitle()
 	if err != nil {
-		newErrorResponse(w, http.StatusInternalServerError, err.Error())
+		NewErrorResponse(w, http.StatusInternalServerError, err.Error())
 		return
 	}
 
@@ -103,7 +101,7 @@ func (h *Handler) handleGetAllMoviesSortedByDate(w http.ResponseWriter, r *http.
 
 	movies, err := h.service.MoviesWithActors.GetMoviesSortedByDate()
 	if err != nil {
-		newErrorResponse(w, http.StatusInternalServerError, err.Error())
+		NewErrorResponse(w, http.StatusInternalServerError, err.Error())
 		return
 	}
 
@@ -117,20 +115,20 @@ func (h *Handler) handleGetMovieById(w http.ResponseWriter, r *http.Request) {
 
 	parts := strings.Split(path, "/")
 	if len(parts) < 4 {
-		newErrorResponse(w, http.StatusBadRequest, "missing id parameter")
+		NewErrorResponse(w, http.StatusBadRequest, "missing id parameter")
 		return
 	}
 
 	idStr := parts[3]
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
-		newErrorResponse(w, http.StatusBadRequest, "invalid id parameter")
+		NewErrorResponse(w, http.StatusBadRequest, "invalid id parameter")
 		return
 	}
 
 	movie, err := h.service.MoviesWithActors.GetMovieById(id)
 	if err != nil {
-		newErrorResponse(w, http.StatusInternalServerError, err.Error())
+		NewErrorResponse(w, http.StatusInternalServerError, err.Error())
 		return
 	}
 
@@ -141,7 +139,7 @@ func (h *Handler) handleGetMovieById(w http.ResponseWriter, r *http.Request) {
 
 func (h *Handler) handleUpdateMovie(w http.ResponseWriter, r *http.Request) {
 	if err := h.checkAdminStatus(w, r); err != nil {
-		newErrorResponse(w, http.StatusForbidden, "This function is only available to the administrator")
+		NewErrorResponse(w, http.StatusForbidden, "This function is only available to the administrator")
 		return
 	}
 
@@ -149,36 +147,36 @@ func (h *Handler) handleUpdateMovie(w http.ResponseWriter, r *http.Request) {
 
 	parts := strings.Split(path, "/")
 	if len(parts) < 4 {
-		newErrorResponse(w, http.StatusBadRequest, "missing id parameter")
+		NewErrorResponse(w, http.StatusBadRequest, "missing id parameter")
 		return
 	}
 
 	idStr := parts[3]
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
-		newErrorResponse(w, http.StatusBadRequest, "invalid id parameter")
+		NewErrorResponse(w, http.StatusBadRequest, "invalid id parameter")
 		return
 	}
 
 	var input filmoteka.UpdateMovies
 	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
-		newErrorResponse(w, http.StatusBadRequest, err.Error())
+		NewErrorResponse(w, http.StatusBadRequest, err.Error())
 		return
 	}
 
 	if err := h.service.UpdateMovie(id, input); err != nil {
-		newErrorResponse(w, http.StatusBadRequest, err.Error())
+		NewErrorResponse(w, http.StatusBadRequest, err.Error())
 		return
 	}
 
-	response := statusResponse{Status: "ok"}
+	response := StatusResponse{Status: "ok"}
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(response)
 }
 
 func (h *Handler) handleDeleteMovie(w http.ResponseWriter, r *http.Request) {
 	if err := h.checkAdminStatus(w, r); err != nil {
-		newErrorResponse(w, http.StatusForbidden, "This function is only available to the administrator")
+		NewErrorResponse(w, http.StatusForbidden, "This function is only available to the administrator")
 		return
 	}
 
@@ -186,24 +184,24 @@ func (h *Handler) handleDeleteMovie(w http.ResponseWriter, r *http.Request) {
 
 	parts := strings.Split(path, "/")
 	if len(parts) < 4 {
-		newErrorResponse(w, http.StatusBadRequest, "missing id parameter")
+		NewErrorResponse(w, http.StatusBadRequest, "missing id parameter")
 		return
 	}
 
 	idStr := parts[3]
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
-		newErrorResponse(w, http.StatusBadRequest, "invalid id parameter")
+		NewErrorResponse(w, http.StatusBadRequest, "invalid id parameter")
 		return
 	}
 
 	err = h.service.Movies.DeleteMovie(id)
 	if err != nil {
-		newErrorResponse(w, http.StatusInternalServerError, err.Error())
+		NewErrorResponse(w, http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	response := statusResponse{Status: "ok"}
+	response := StatusResponse{Status: "ok"}
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(response)
 }
@@ -215,13 +213,13 @@ type search struct {
 func (h *Handler) handleSearchMoviesByTitle(w http.ResponseWriter, r *http.Request) {
 	var fragmentTitle search
 	if err := json.NewDecoder(r.Body).Decode(&fragmentTitle); err != nil {
-		newErrorResponse(w, http.StatusBadRequest, err.Error())
+		NewErrorResponse(w, http.StatusBadRequest, err.Error())
 		return
 	}
 
 	movies, err := h.service.SearchMoviesByTitle(string(fragmentTitle.Fragment))
 	if err != nil {
-		newErrorResponse(w, http.StatusInternalServerError, err.Error())
+		NewErrorResponse(w, http.StatusInternalServerError, err.Error())
 		return
 	}
 
@@ -233,13 +231,13 @@ func (h *Handler) handleSearchMoviesByTitle(w http.ResponseWriter, r *http.Reque
 func (h *Handler) handleSearchMoviesByActorName(w http.ResponseWriter, r *http.Request) {
 	var fragmentTitle search
 	if err := json.NewDecoder(r.Body).Decode(&fragmentTitle); err != nil {
-		newErrorResponse(w, http.StatusBadRequest, err.Error())
+		NewErrorResponse(w, http.StatusBadRequest, err.Error())
 		return
 	}
 
 	movies, err := h.service.SearchMovieByActorName(string(fragmentTitle.Fragment))
 	if err != nil {
-		newErrorResponse(w, http.StatusInternalServerError, err.Error())
+		NewErrorResponse(w, http.StatusInternalServerError, err.Error())
 		return
 	}
 

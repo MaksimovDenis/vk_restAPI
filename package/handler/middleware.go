@@ -17,13 +17,13 @@ func (h *Handler) userIdentity(next http.HandlerFunc) http.HandlerFunc {
 		header := r.Header.Get(authorizationHeader)
 
 		if header == "" {
-			newErrorResponse(w, http.StatusUnauthorized, "empty auth header")
+			NewErrorResponse(w, http.StatusUnauthorized, "empty auth header")
 			return
 		}
 
 		headerParts := strings.Split(header, " ")
 		if len(headerParts) != 2 {
-			newErrorResponse(w, http.StatusUnauthorized, "invalid auth header")
+			NewErrorResponse(w, http.StatusUnauthorized, "invalid auth header")
 			return
 		}
 
@@ -31,7 +31,7 @@ func (h *Handler) userIdentity(next http.HandlerFunc) http.HandlerFunc {
 
 		userId, err := h.service.Authorization.ParseToken(token)
 		if err != nil {
-			newErrorResponse(w, http.StatusUnauthorized, err.Error())
+			NewErrorResponse(w, http.StatusUnauthorized, err.Error())
 			return
 		}
 

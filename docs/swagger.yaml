@@ -1,0 +1,67 @@
+basePath: /
+definitions:
+  filmoteka.User:
+    properties:
+      is_admin:
+        type: boolean
+      password:
+        type: string
+      username:
+        type: string
+    type: object
+  handler.Err:
+    properties:
+      message:
+        type: string
+    type: object
+host: localhost:8000
+info:
+  contact: {}
+  description: API Server for Filmoteka Application
+  title: VK_RESTAPI
+paths:
+  /auth/sign-in:
+    post:
+      consumes:
+      - application/json
+      description: logIn
+      operationId: logIn
+      parameters:
+      - description: credentials
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/filmoteka.User'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: token
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.Err'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.Err'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.Err'
+        default:
+          description: Other Errors
+          schema:
+            $ref: '#/definitions/handler.Err'
+      summary: SignIn
+      tags:
+      - auth
+securityDefinitions:
+  ApiKeyAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

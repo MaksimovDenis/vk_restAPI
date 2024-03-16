@@ -17,6 +17,17 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
+// @title VK_RESTAPI
+// @verstion 1.0
+// @description API Server for Filmoteka Application
+
+// @host localhost:8000
+// @BasePath /
+
+// @securityDefinitions.apikey ApiKeyAuth
+// @in header
+// @name Authorization
+
 type Config struct {
 	Port string `yaml:"port"`
 	DB   struct {
@@ -50,6 +61,7 @@ func initConfig() (*Config, error) {
 }
 
 func main() {
+
 	//Setting JSON format for our logs
 	logrus.SetFormatter(new(logrus.JSONFormatter))
 

@@ -3,6 +3,9 @@ package handler
 import (
 	"net/http"
 	"vk_restAPI/package/service"
+
+	_ "github.com/swaggo/http-swagger/example/go-chi/docs"
+	httpSwagger "github.com/swaggo/http-swagger/v2"
 )
 
 type Handler struct {
@@ -15,6 +18,10 @@ func NewHandler(service *service.Service) *Handler {
 
 func (h *Handler) InitRoutes() *http.ServeMux {
 	mux := http.NewServeMux()
+
+	mux.Handle("/swagger/", httpSwagger.Handler(
+		httpSwagger.URL("docs/"), // URL для JSON-файла спецификации Swagger
+	))
 
 	auth := "/auth"
 
