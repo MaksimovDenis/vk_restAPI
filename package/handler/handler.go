@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"vk_restAPI/package/service"
 
-	_ "https://github.com/MaksimovDenis/vk_restAPI/docs"
+	_ "vk_restAPI/docs"
 
 	httpSwagger "github.com/swaggo/http-swagger/v2"
 )
@@ -20,9 +20,7 @@ func NewHandler(service *service.Service) *Handler {
 func (h *Handler) InitRoutes() *http.ServeMux {
 	mux := http.NewServeMux()
 
-	mux.Handle("/swagger/", httpSwagger.Handler(
-		httpSwagger.URL("docs/swagger.json"),
-	))
+	mux.Handle("/swagger/", httpSwagger.Handler())
 
 	auth := "/auth"
 
@@ -35,7 +33,7 @@ func (h *Handler) InitRoutes() *http.ServeMux {
 		}
 	})
 
-	mux.HandleFunc(auth+"/sign-in", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc(auth+"/log-in", func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == http.MethodPost {
 			h.handleSignIn(w, r)
 			return
@@ -106,7 +104,7 @@ func (h *Handler) InitRoutes() *http.ServeMux {
 		}
 	})
 
-	//GET for /api/movies/sorted/title
+	//GET for /api/movies/sort/title
 	mux.HandleFunc(apiMovies+"/sort/title", func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == http.MethodGet {
 			h.userIdentity(h.handleGetAllMoviesSortedByTitle)(w, r)
@@ -116,7 +114,7 @@ func (h *Handler) InitRoutes() *http.ServeMux {
 		}
 	})
 
-	//GET for /api/movies/sorted/date
+	//GET for /api/movies/sort/date
 	mux.HandleFunc(apiMovies+"/sort/date", func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == http.MethodGet {
 			h.userIdentity(h.handleGetAllMoviesSortedByDate)(w, r)
@@ -143,7 +141,7 @@ func (h *Handler) InitRoutes() *http.ServeMux {
 
 	//GET for /api/movies/searchbytitle
 	mux.HandleFunc(apiMovies+"/searchbytitle", func(w http.ResponseWriter, r *http.Request) {
-		if r.Method == http.MethodGet {
+		if r.Method == http.MethodPost {
 			h.userIdentity(h.handleSearchMoviesByTitle)(w, r)
 			return
 		} else {
@@ -153,7 +151,7 @@ func (h *Handler) InitRoutes() *http.ServeMux {
 
 	//GET for /api/movies/searchbyactor
 	mux.HandleFunc(apiMovies+"/searchbyactor", func(w http.ResponseWriter, r *http.Request) {
-		if r.Method == http.MethodGet {
+		if r.Method == http.MethodPost {
 			h.userIdentity(h.handleSearchMoviesByActorName)(w, r)
 			return
 		} else {

@@ -1,18 +1,5 @@
 basePath: /
 definitions:
-  filmoteka.Actors:
-    properties:
-      date_of_birth:
-        type: string
-      first_name:
-        type: string
-      gender:
-        type: string
-      id:
-        type: integer
-      last_name:
-        type: string
-    type: object
   filmoteka.ActorsWithMovies:
     properties:
       date_of_birth:
@@ -28,6 +15,49 @@ definitions:
       movies:
         type: string
     type: object
+  filmoteka.MoviesWithActors:
+    properties:
+      actors:
+        type: string
+      description:
+        type: string
+      id:
+        type: integer
+      rating:
+        type: integer
+      release_date:
+        type: string
+      title:
+        type: string
+    type: object
+  filmoteka.UpdateActors:
+    properties:
+      date_of_birth:
+        type: string
+      first_name:
+        type: string
+      gender:
+        type: string
+      last_name:
+        type: string
+    type: object
+  filmoteka.UpdateMovies:
+    properties:
+      actors:
+        items:
+          type: integer
+        type: array
+      description:
+        type: string
+      id:
+        type: integer
+      rating:
+        type: integer
+      release_date:
+        type: string
+      title:
+        type: string
+    type: object
   filmoteka.User:
     properties:
       is_admin:
@@ -37,9 +67,45 @@ definitions:
       username:
         type: string
     type: object
+  handler.CreateActorRequest:
+    properties:
+      date_of_birth:
+        type: string
+      first_name:
+        type: string
+      gender:
+        type: string
+      last_name:
+        type: string
+    type: object
+  handler.CreateMoviSwaggerRequest:
+    properties:
+      description:
+        type: string
+      rating:
+        type: integer
+      release_date:
+        type: string
+      title:
+        type: string
+    type: object
   handler.Err:
     properties:
       message:
+        type: string
+    type: object
+  handler.MovieSwaggerRequest:
+    properties:
+      actorIDs:
+        items:
+          type: integer
+        type: array
+      movie:
+        $ref: '#/definitions/handler.CreateMoviSwaggerRequest'
+    type: object
+  handler.StatusResponse:
+    properties:
+      status:
         type: string
     type: object
   handler.getActorsResponse:
@@ -49,18 +115,32 @@ definitions:
           $ref: '#/definitions/filmoteka.ActorsWithMovies'
         type: array
     type: object
-  handler.signInInput:
+  handler.getMoviesResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/filmoteka.MoviesWithActors'
+        type: array
+    type: object
+  handler.logInInInput:
     properties:
       password:
         type: string
       username:
         type: string
     type: object
+  handler.search:
+    properties:
+      fragment:
+        type: string
+    type: object
 host: localhost:8000
 info:
-  contact: {}
+  contact:
+    email: maksimovis74@gmail.com
+    name: Denis Maksimov
   description: API Server for Filmoteka Application
-  title: VK_RESTAPI
+  title: HOCHU V VK
 paths:
   /api/actors:
     get:
@@ -78,8 +158,8 @@ paths:
           description: Bad Request
           schema:
             $ref: '#/definitions/handler.Err'
-        "403":
-          description: Forbidden
+        "404":
+          description: Not Found
           schema:
             $ref: '#/definitions/handler.Err'
         "500":
@@ -89,6 +169,115 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: Get All Actors
+      tags:
+      - actors
+  /api/actors/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete information about Actor
+      parameters:
+      - description: Actor ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.StatusResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.Err'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.Err'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.Err'
+      security:
+      - ApiKeyAuth: []
+      summary: Delete Actor by Id
+      tags:
+      - actors
+    get:
+      consumes:
+      - application/json
+      description: Get Actor by ID
+      parameters:
+      - description: Actor ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/filmoteka.ActorsWithMovies'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.Err'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.Err'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.Err'
+      security:
+      - ApiKeyAuth: []
+      summary: Get Actor By ID
+      tags:
+      - actors
+    put:
+      consumes:
+      - application/json
+      description: Update information about Actor
+      parameters:
+      - description: Actor ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Actor information for update
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/filmoteka.UpdateActors'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.StatusResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.Err'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.Err'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.Err'
+      security:
+      - ApiKeyAuth: []
+      summary: Update Actor
       tags:
       - actors
   /api/actors/create:
@@ -102,7 +291,7 @@ paths:
         name: input
         required: true
         schema:
-          $ref: '#/definitions/filmoteka.Actors'
+          $ref: '#/definitions/handler.CreateActorRequest'
       produces:
       - application/json
       responses:
@@ -114,8 +303,8 @@ paths:
           description: Bad Request
           schema:
             $ref: '#/definitions/handler.Err'
-        "403":
-          description: Forbidden
+        "404":
+          description: Not Found
           schema:
             $ref: '#/definitions/handler.Err'
         "500":
@@ -127,7 +316,311 @@ paths:
       summary: Create Actor
       tags:
       - actors
-  /auth/sign-in:
+  /api/movies:
+    get:
+      consumes:
+      - application/json
+      description: Get List of Movies Sorted By Rating
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.getMoviesResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.Err'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.Err'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.Err'
+      security:
+      - ApiKeyAuth: []
+      summary: Get All Movies
+      tags:
+      - movies
+  /api/movies/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete information about Movie
+      parameters:
+      - description: Movie ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.StatusResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.Err'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.Err'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.Err'
+      security:
+      - ApiKeyAuth: []
+      summary: Delete Movie by Id
+      tags:
+      - movies
+    get:
+      consumes:
+      - application/json
+      description: Get Movie by ID
+      parameters:
+      - description: Movie ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/filmoteka.MoviesWithActors'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.Err'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.Err'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.Err'
+      security:
+      - ApiKeyAuth: []
+      summary: Get Movie By ID
+      tags:
+      - movies
+    put:
+      consumes:
+      - application/json
+      description: Update information about Movie
+      parameters:
+      - description: Movie ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Movie information for update
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/filmoteka.UpdateMovies'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.StatusResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.Err'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.Err'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.Err'
+      security:
+      - ApiKeyAuth: []
+      summary: Update Movie
+      tags:
+      - movies
+  /api/movies/create:
+    post:
+      consumes:
+      - application/json
+      description: Create a new movie
+      parameters:
+      - description: Movie information
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/handler.MovieSwaggerRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: id
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.Err'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.Err'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.Err'
+      security:
+      - ApiKeyAuth: []
+      summary: Create Movie
+      tags:
+      - movies
+  /api/movies/searchbyactor:
+    post:
+      consumes:
+      - application/json
+      description: Search Movie By Fragment Of Actor Name
+      parameters:
+      - description: Search Movie By Fragment Of Actor Name
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/handler.search'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.getMoviesResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.Err'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.Err'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.Err'
+      security:
+      - ApiKeyAuth: []
+      summary: Search Movie By Fragment Of Actor Name
+      tags:
+      - movies
+  /api/movies/searchbytitle:
+    post:
+      consumes:
+      - application/json
+      description: Search Movie By Title
+      parameters:
+      - description: Search Movie By Fragment Of Title
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/handler.search'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.getMoviesResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.Err'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.Err'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.Err'
+      security:
+      - ApiKeyAuth: []
+      summary: Search Movie By Fragment of Title
+      tags:
+      - movies
+  /api/movies/sort/date:
+    get:
+      consumes:
+      - application/json
+      description: Get List of Movies Sorted By Date
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.getMoviesResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.Err'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.Err'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.Err'
+      security:
+      - ApiKeyAuth: []
+      summary: Get All Movies Sorted By Date
+      tags:
+      - movies
+  /api/movies/sort/title:
+    get:
+      consumes:
+      - application/json
+      description: Get List of Movies Sorted By Title
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.getMoviesResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.Err'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.Err'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.Err'
+      security:
+      - ApiKeyAuth: []
+      summary: Get All Movies Sorted By Title
+      tags:
+      - movies
+  /auth/log-in:
     post:
       consumes:
       - application/json
@@ -138,7 +631,7 @@ paths:
         name: input
         required: true
         schema:
-          $ref: '#/definitions/handler.signInInput'
+          $ref: '#/definitions/handler.logInInInput'
       produces:
       - application/json
       responses:
@@ -158,7 +651,7 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/handler.Err'
-      summary: SignIn
+      summary: LogIn
       tags:
       - auth
   /auth/sign-up:

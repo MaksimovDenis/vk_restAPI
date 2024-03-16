@@ -247,7 +247,7 @@ func (m *MoviePostgres) SearchMoviesByTitle(fragment string) ([]filmoteka.Movies
 		INNER JOIN 
 			%s a ON ma.actor_id = a.id
 		WHERE 
-			m.title LIKE $1
+			LOWER(m.title) LIKE LOWER($1)
 		GROUP BY 
 			m.id
 	`, moviesTable, moviesActorsTable, actorsTable)
@@ -276,7 +276,7 @@ func (m *MoviePostgres) SearchMovieByActorName(fragment string) ([]filmoteka.Mov
 		INNER JOIN 
 			%s a ON ma.actor_id = a.id
 		WHERE 
-			a.first_name LIKE $1 OR a.last_name LIKE $1
+			LOWER(a.first_name) LIKE LOWER($1) OR LOWER(a.last_name) LIKE LOWER($1)
 		GROUP BY 
 			m.id
 	`, moviesTable, moviesActorsTable, actorsTable)

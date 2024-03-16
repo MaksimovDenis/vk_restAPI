@@ -5,6 +5,7 @@ import (
 	"io"
 	"os"
 	filmoteke "vk_restAPI"
+	logger "vk_restAPI/logs"
 	"vk_restAPI/package/handler"
 	"vk_restAPI/package/repository"
 	"vk_restAPI/package/service"
@@ -17,7 +18,7 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-// @title VK_RESTAPI
+// @title HOCHU V VK
 // @verstion 1.0
 // @description API Server for Filmoteka Application
 
@@ -27,6 +28,9 @@ import (
 // @securityDefinitions.apikey ApiKeyAuth
 // @in header
 // @name Authorization
+
+// @contact.name Denis Maksimov
+// @contact.email maksimovis74@gmail.com
 
 type Config struct {
 	Port string `yaml:"port"`
@@ -92,6 +96,8 @@ func main() {
 	repositories := repository.NewRepository(db)
 	services := service.NewService(repositories)
 	handlers := handler.NewHandler(services)
+
+	logger.Log.Info("Server started")
 
 	//Running server
 	srv := new(filmoteke.Server)
