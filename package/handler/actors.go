@@ -8,19 +8,28 @@ import (
 	filmoteka "vk_restAPI"
 )
 
+// @Summary Create Actor
+// @Security ApiKeyAuth
+// @Tags actors
+// @Description Create a new actor
+// @Accept json
+// @Produce json
+// @Param input body filmoteka.Actors true "Actor information"
+// @Success 200 {string} string "id"
+// @Failure 400 {object} Err "Bad Request"
+// @Failure 403 {object} Err "Forbidden"
+// @Failure 500 {object} Err "Internal Server Error"
+// @Router /api/actors/create [post]
 func (h *Handler) handleCreateActor(w http.ResponseWriter, r *http.Request) {
 	if err := h.checkAdminStatus(w, r); err != nil {
 		NewErrorResponse(w, http.StatusForbidden, "This function is only available to the administrator")
 		return
 	}
-
 	var input filmoteka.Actors
 	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
 		NewErrorResponse(w, http.StatusBadRequest, err.Error())
 		return
 	}
-
-	//TODO: ПРЕОБРАЗОВАТЬ STRING В TIME
 
 	id, err := h.service.Actors.CreateActor(input)
 	if err != nil {
@@ -39,6 +48,17 @@ type getActorsResponse struct {
 	Data []filmoteka.ActorsWithMovies `json:"data"`
 }
 
+// @Summary Get All Actors
+// @Security ApiKeyAuth
+// @Tags actors
+// @Description Get List of Actors
+// @Accept json
+// @Produce json
+// @Success 200 {object} getActorsResponse
+// @Failure 400 {object} Err "Bad Request"
+// @Failure 403 {object} Err "Forbidden"
+// @Failure 500 {object} Err "Internal Server Error"
+// @Router /api/actors [get]
 func (h *Handler) handleGetAllActors(w http.ResponseWriter, r *http.Request) {
 
 	actors, err := h.service.ActorsWithMovies.GetActors()

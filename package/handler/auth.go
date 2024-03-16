@@ -7,19 +7,16 @@ import (
 )
 
 // @Summary SignUp
+// @Description  create account
 // @Tags auth
-// @Description create account
-// @ID create-account
 // @Accept json
 // @Produce json
 // @Param input body filmoteka.User true "account info"
-// @Success 200 {string} string "token"
+// @Success 200 {integer} integer 1
 // @Failure 400 {object} Err "Bad Request"
 // @Failure 404 {object} Err "Not Found"
 // @Failure 500 {object} Err "Internal Server Error"
-// @Failure default {object} Err "Other Errors"
-// @Router /auth/sign-up [post]
-
+// @Router       /auth/sign-up [post]
 func (h *Handler) handleSignUp(w http.ResponseWriter, r *http.Request) {
 	var input filmoteka.User
 
@@ -32,6 +29,7 @@ func (h *Handler) handleSignUp(w http.ResponseWriter, r *http.Request) {
 	id, err := h.service.Authorization.CreateUser(input)
 	if err != nil {
 		NewErrorResponse(w, http.StatusInternalServerError, err.Error())
+		return
 	}
 
 	response := map[string]interface{}{
@@ -39,24 +37,26 @@ func (h *Handler) handleSignUp(w http.ResponseWriter, r *http.Request) {
 	}
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(response)
+}
 
+type signInInput struct {
+	Username string `json:"username"`
+	Password string `json:"password"`
 }
 
 // @Summary SignIn
+// @Description  login
 // @Tags auth
-// @Description logIn
-// @ID logIn
 // @Accept json
 // @Produce json
-// @Param input body filmoteka.User true "credentials"
+// @Param input body signInInput true "credentials"
 // @Success 200 {string} string "token"
 // @Failure 400 {object} Err "Bad Request"
 // @Failure 404 {object} Err "Not Found"
 // @Failure 500 {object} Err "Internal Server Error"
-// @Failure default {object} Err "Other Errors"
-// @Router /auth/sign-in [post]
+// @Router       /auth/sign-in [post]
 func (h *Handler) handleSignIn(w http.ResponseWriter, r *http.Request) {
-	var input filmoteka.User
+	var input signInInput
 
 	err := json.NewDecoder(r.Body).Decode(&input)
 	if err != nil {

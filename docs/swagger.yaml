@@ -1,5 +1,33 @@
 basePath: /
 definitions:
+  filmoteka.Actors:
+    properties:
+      date_of_birth:
+        type: string
+      first_name:
+        type: string
+      gender:
+        type: string
+      id:
+        type: integer
+      last_name:
+        type: string
+    type: object
+  filmoteka.ActorsWithMovies:
+    properties:
+      date_of_birth:
+        type: string
+      first_name:
+        type: string
+      gender:
+        type: string
+      id:
+        type: integer
+      last_name:
+        type: string
+      movies:
+        type: string
+    type: object
   filmoteka.User:
     properties:
       is_admin:
@@ -14,25 +42,103 @@ definitions:
       message:
         type: string
     type: object
+  handler.getActorsResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/filmoteka.ActorsWithMovies'
+        type: array
+    type: object
+  handler.signInInput:
+    properties:
+      password:
+        type: string
+      username:
+        type: string
+    type: object
 host: localhost:8000
 info:
   contact: {}
   description: API Server for Filmoteka Application
   title: VK_RESTAPI
 paths:
+  /api/actors:
+    get:
+      consumes:
+      - application/json
+      description: Get List of Actors
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.getActorsResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.Err'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/handler.Err'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.Err'
+      security:
+      - ApiKeyAuth: []
+      summary: Get All Actors
+      tags:
+      - actors
+  /api/actors/create:
+    post:
+      consumes:
+      - application/json
+      description: Create a new actor
+      parameters:
+      - description: Actor information
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/filmoteka.Actors'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: id
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.Err'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/handler.Err'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.Err'
+      security:
+      - ApiKeyAuth: []
+      summary: Create Actor
+      tags:
+      - actors
   /auth/sign-in:
     post:
       consumes:
       - application/json
-      description: logIn
-      operationId: logIn
+      description: login
       parameters:
       - description: credentials
         in: body
         name: input
         required: true
         schema:
-          $ref: '#/definitions/filmoteka.User'
+          $ref: '#/definitions/handler.signInInput'
       produces:
       - application/json
       responses:
@@ -52,11 +158,41 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/handler.Err'
-        default:
-          description: Other Errors
+      summary: SignIn
+      tags:
+      - auth
+  /auth/sign-up:
+    post:
+      consumes:
+      - application/json
+      description: create account
+      parameters:
+      - description: account info
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/filmoteka.User'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: integer
+        "400":
+          description: Bad Request
           schema:
             $ref: '#/definitions/handler.Err'
-      summary: SignIn
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.Err'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.Err'
+      summary: SignUp
       tags:
       - auth
 securityDefinitions:

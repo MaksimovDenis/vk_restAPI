@@ -4,7 +4,8 @@ import (
 	"net/http"
 	"vk_restAPI/package/service"
 
-	_ "github.com/swaggo/http-swagger/example/go-chi/docs"
+	_ "https://github.com/MaksimovDenis/vk_restAPI/docs"
+
 	httpSwagger "github.com/swaggo/http-swagger/v2"
 )
 
@@ -20,7 +21,7 @@ func (h *Handler) InitRoutes() *http.ServeMux {
 	mux := http.NewServeMux()
 
 	mux.Handle("/swagger/", httpSwagger.Handler(
-		httpSwagger.URL("docs/"), // URL для JSON-файла спецификации Swagger
+		httpSwagger.URL("docs/swagger.json"),
 	))
 
 	auth := "/auth"
