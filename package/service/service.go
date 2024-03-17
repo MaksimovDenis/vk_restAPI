@@ -5,6 +5,8 @@ import (
 	"vk_restAPI/package/repository"
 )
 
+//go:generate mockgen -source=service.go -destination=mocks/mock.go
+
 type Authorization interface {
 	CreateUser(user filmoteka.User) (int, error)
 	GetUserStatus(id int) (bool, error)

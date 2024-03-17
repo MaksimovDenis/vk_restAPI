@@ -5,6 +5,7 @@ import (
 	"errors"
 	"net/http"
 	"strings"
+	logger "vk_restAPI/logs"
 )
 
 const (
@@ -17,17 +18,29 @@ func (h *Handler) userIdentity(next http.HandlerFunc) http.HandlerFunc {
 		header := r.Header.Get(authorizationHeader)
 
 		if header == "" {
+			logger.Log.Error("empty auth header")
 			NewErrorResponse(w, http.StatusUnauthorized, "empty auth header")
 			return
 		}
 
 		headerParts := strings.Split(header, " ")
 		if len(headerParts) != 2 {
+			logger.Log.Error("invalid auth header")
 			NewErrorResponse(w, http.StatusUnauthorized, "invalid auth header")
 			return
 		}
 
 		token := headerParts[1]
+
+		if headerParts[0] != "Bearer" {
+			logger.Log.Error("invalid auth header")
+			NewErrorResponse(w, http.StatusUnauthorized, "invailed auth header")
+		}
+
+		if token == "" {
+			logger.Log.Error("token is empty")
+			NewErrorResponse(w, http.StatusUnauthorized, "token is empty")
+		}
 
 		userId, err := h.service.Authorization.ParseToken(token)
 		if err != nil {

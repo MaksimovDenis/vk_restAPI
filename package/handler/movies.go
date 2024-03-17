@@ -129,6 +129,11 @@ func (h *Handler) handleGetAllMovies(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if len(movies) == 0 {
+		NewErrorResponse(w, http.StatusOK, "The list of movies is empty")
+		return
+	}
+
 	response := getMoviesResponse{Data: movies}
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
@@ -160,6 +165,11 @@ func (h *Handler) handleGetAllMoviesSortedByTitle(w http.ResponseWriter, r *http
 		return
 	}
 
+	if len(movies) == 0 {
+		NewErrorResponse(w, http.StatusOK, "The list of movies is empty")
+		return
+	}
+
 	response := getMoviesResponse{Data: movies}
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
@@ -188,6 +198,11 @@ func (h *Handler) handleGetAllMoviesSortedByDate(w http.ResponseWriter, r *http.
 	if err != nil {
 		logger.Log.Error("Failed to Get All Movies Sorted by Date: ", err.Error())
 		NewErrorResponse(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	if len(movies) == 0 {
+		NewErrorResponse(w, http.StatusOK, "The list of movies is empty")
 		return
 	}
 
@@ -366,7 +381,7 @@ func (h *Handler) handleDeleteMovie(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-type search struct {
+type Search struct {
 	Fragment string `json:"fragment"`
 }
 
@@ -386,7 +401,7 @@ func (h *Handler) handleSearchMoviesByTitle(w http.ResponseWriter, r *http.Reque
 
 	logger.Log.Info("Handling Search Movie By Title")
 
-	var fragmentTitle search
+	var fragmentTitle Search
 	if err := json.NewDecoder(r.Body).Decode(&fragmentTitle); err != nil {
 		logger.Log.Error("Failed to decode request body: ", err.Error())
 		NewErrorResponse(w, http.StatusBadRequest, err.Error())
@@ -397,6 +412,11 @@ func (h *Handler) handleSearchMoviesByTitle(w http.ResponseWriter, r *http.Reque
 	if err != nil {
 		logger.Log.Error("Failed to search movie by title: ", err.Error())
 		NewErrorResponse(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	if len(movies) == 0 {
+		NewErrorResponse(w, http.StatusOK, "The list of movies is empty")
 		return
 	}
 
@@ -425,7 +445,7 @@ func (h *Handler) handleSearchMoviesByActorName(w http.ResponseWriter, r *http.R
 
 	logger.Log.Info("Handling Search Movie By Actor Name")
 
-	var fragmentTitle search
+	var fragmentTitle Search
 	if err := json.NewDecoder(r.Body).Decode(&fragmentTitle); err != nil {
 		logger.Log.Error("Failed to decode request body: ", err.Error())
 		NewErrorResponse(w, http.StatusBadRequest, err.Error())
@@ -436,6 +456,11 @@ func (h *Handler) handleSearchMoviesByActorName(w http.ResponseWriter, r *http.R
 	if err != nil {
 		logger.Log.Error("Failed to search movie by actor name: ", err.Error())
 		NewErrorResponse(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	if len(movies) == 0 {
+		NewErrorResponse(w, http.StatusOK, "The list of movies is empty")
 		return
 	}
 

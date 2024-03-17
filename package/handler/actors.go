@@ -88,6 +88,11 @@ func (h *Handler) handleGetAllActors(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if len(actors) == 0 {
+		NewErrorResponse(w, http.StatusOK, "The list of actors is empty")
+		return
+	}
+
 	response := getActorsResponse{Data: actors}
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
