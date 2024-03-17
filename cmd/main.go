@@ -1,9 +1,12 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"io"
 	"os"
+	"os/signal"
+	"syscall"
 	filmoteke "vk_restAPI"
 	logger "vk_restAPI/logs"
 	"vk_restAPI/package/handler"
@@ -97,12 +100,28 @@ func main() {
 	services := service.NewService(repositories)
 	handlers := handler.NewHandler(services)
 
-	logger.Log.Info("Server started")
-
 	//Running server
 	srv := new(filmoteke.Server)
-	if err := srv.Run(config.Port, handlers.InitRoutes()); err != nil {
-		logrus.Fatalf("error occured while running http server: %s", err.Error())
+	go func() {
+		if err := srv.Run(config.Port, handlers.InitRoutes()); err != nil {
+			logrus.Fatalf("error occured while running http server: %s", err.Error())
+		}
+	}()
+
+	logger.Log.Info("Filmoteka app started")
+
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, syscall.SIGTERM, syscall.SIGINT)
+	<-quit
+
+	logger.Log.Info("Filmoteka app is shutting down")
+
+	if err := srv.Shutdown(context.Background()); err != nil {
+		logger.Log.Errorf("error occured on server shutting down: %s", err.Error())
+	}
+
+	if err := db.Close(); err != nil {
+		logger.Log.Errorf("error occured on db connection close: %s", err.Error())
 	}
 
 }
