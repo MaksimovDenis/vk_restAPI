@@ -3,6 +3,8 @@ module vk_restAPI
 go 1.21.6
 
 require (
+	github.com/DATA-DOG/go-sqlmock v1.5.2
+	github.com/aws/smithy-go v1.13.3
 	github.com/golang-jwt/jwt/v4 v4.5.0
 	github.com/golang/mock v1.6.0
 	github.com/jmoiron/sqlx v1.3.5
