@@ -11,7 +11,8 @@
 
 - После запуска приложения swagger документация доступна по ссылке:  
 [http://localhost:8000/swagger/index.html](URL)
-![Swagger](https://github.com/MaksimovDenis/vk_restAPI/assets/44647373/c1c63b72-ce61-4d3a-bef5-350eef336253)
+![Swagger](https://github.com/MaksimovDenis/vk_restAPI/assets/44647373/c1c63b72-ce61-4d3a-bef5-350eef336253)  
+![Swagger](https://github.com/MaksimovDenis/vk_restAPI/assets/44647373/30023cdc-9d6b-4b19-8c66-7c8ba2a31a8d)    
 
 Для авторизации необходимо зарегестрироваться, залогиниться и получить JWT токен  
 
