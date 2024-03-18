@@ -4,10 +4,11 @@
 
 ## Интсрукция по установке и использованию
 - Для запуска приложения, необходимо из корневой директории проекта выполнить команду:  
-`docker-compose up`
+`git clone https://github.com/MaksimovDenis/vk_restAPI.git`  
+`docker-compose build`  
+`docker-compose up`  
 - Команда запустит все контейнеры описанные в файле `docker-compose.yaml`, включая приложение и БД PostgreSQL.
-- В случае, если в доступе к папке database отказано, выполните команду в корневой директории проекта:  
-`sudo chmod -R 777 ./database`
+
 - После запуска приложения swagger документация доступна по ссылке:  
 [http://localhost:8000/swagger/index.html](URL)
 ![Swagger](https://github.com/MaksimovDenis/vk_restAPI/assets/44647373/c1c63b72-ce61-4d3a-bef5-350eef336253)
