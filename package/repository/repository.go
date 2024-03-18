@@ -19,7 +19,7 @@ type Actors interface {
 }
 
 type Movies interface {
-	CreateMovie(userId int, movie filmoteka.Movies, actorIDs []int) (int, error)
+	CreateMovie(movie filmoteka.Movies, actorIDs []int) (int, error)
 	DeleteMovie(movieId int) error
 }
 

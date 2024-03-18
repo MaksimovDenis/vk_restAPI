@@ -19,7 +19,7 @@ func NewMoviePostgres(db *sqlx.DB) *MoviePostgres {
 	return &MoviePostgres{db: db}
 }
 
-func (m *MoviePostgres) CreateMovie(userId int, movie filmoteka.Movies, actorIDs []int) (int, error) {
+func (m *MoviePostgres) CreateMovie(movie filmoteka.Movies, actorIDs []int) (int, error) {
 	var id int
 
 	var exisitngID int

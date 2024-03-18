@@ -184,18 +184,18 @@ func (m *MockMovies) EXPECT() *MockMoviesMockRecorder {
 }
 
 // CreateMovie mocks base method.
-func (m *MockMovies) CreateMovie(userId int, movie vk_restAPI.Movies, actorIDs []int) (int, error) {
+func (m *MockMovies) CreateMovie(movie vk_restAPI.Movies, actorIDs []int) (int, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "CreateMovie", userId, movie, actorIDs)
+	ret := m.ctrl.Call(m, "CreateMovie", movie, actorIDs)
 	ret0, _ := ret[0].(int)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // CreateMovie indicates an expected call of CreateMovie.
-func (mr *MockMoviesMockRecorder) CreateMovie(userId, movie, actorIDs interface{}) *gomock.Call {
+func (mr *MockMoviesMockRecorder) CreateMovie(movie, actorIDs interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateMovie", reflect.TypeOf((*MockMovies)(nil).CreateMovie), userId, movie, actorIDs)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateMovie", reflect.TypeOf((*MockMovies)(nil).CreateMovie), movie, actorIDs)
 }
 
 // DeleteMovie mocks base method.

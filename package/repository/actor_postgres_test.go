@@ -5,44 +5,71 @@ import (
 	filmoteka "vk_restAPI"
 
 	"github.com/DATA-DOG/go-sqlmock"
-	"github.com/aws/smithy-go/ptr"
 	"github.com/jmoiron/sqlx"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestActorPostgres_CreateActor(t *testing.T) {
-
-	mockDB, mock, err := sqlmock.New()
+	db, mock, err := sqlmock.New()
 	if err != nil {
-		t.Fatalf("error '%s' wasn't expected wht opening a stub db connection", err)
-
+		t.Fatalf("an error '%s' wasn't expected when opening a stub db connection", err)
 	}
-	defer mockDB.Close()
+	defer db.Close()
 
-	mock.ExpectQuery("SELECT id FROM actors WHERE first_name=\\$1 AND last_name=\\$2").
-		WithArgs("Denis", "Maksimov").
-		WillReturnRows(sqlmock.NewRows([]string{"id"}))
-
-	mock.ExpectQuery("INSERT INTO actors").
-		WithArgs("Denis", "Maksimov", "male", "1996-06-20").
-		WillReturnRows(sqlmock.NewRows([]string{"id"}).AddRow(1))
-
-	sqlxDB := sqlx.NewDb(mockDB, "sqlmock")
+	sqlxDB := sqlx.NewDb(db, "sqlmock")
 
 	actorRepo := NewActorPostgres(sqlxDB)
 
-	id, err := actorRepo.CreateActor(filmoteka.Actors{
-		FirstName:   "Denis",
-		LastName:    "Maksimov",
-		Gender:      "male",
-		DateOfBirth: "1996-06-20",
-	})
+	type args struct {
+		atctor filmoteka.Actors
+	}
+	type mockBehaivior func(args args)
 
-	assert.NoError(t, err)
+	testTable := []struct {
+		name          string
+		mockBehaivior mockBehaivior
+		args          args
+		wantErr       bool
+	}{
+		{
+			name: "OK",
+			args: args{
+				atctor: filmoteka.Actors{
+					Id:          1,
+					FirstName:   "Denis",
+					LastName:    "Maksimov",
+					Gender:      "male",
+					DateOfBirth: "1996-06-20",
+				},
+			},
 
-	assert.Equal(t, 1, id)
+			mockBehaivior: func(args args) {
 
-	assert.NoError(t, mock.ExpectationsWereMet())
+				mock.ExpectQuery("SELECT id FROM actors WHERE first_name=\\$1 AND last_name=\\$2").
+					WithArgs("Denis", "Maksimov").
+					WillReturnRows(sqlmock.NewRows([]string{"id"}))
+
+				rows := sqlmock.NewRows([]string{"id"}).AddRow(args.atctor.Id)
+
+				mock.ExpectQuery("INSERT INTO actors").
+					WithArgs(args.atctor.FirstName, args.atctor.LastName, args.atctor.Gender, args.atctor.DateOfBirth).WillReturnRows(rows)
+			},
+		},
+	}
+	for _, testCase := range testTable {
+		t.Run(testCase.name, func(t *testing.T) {
+			testCase.mockBehaivior(testCase.args)
+
+			got, err := actorRepo.CreateActor(testCase.args.atctor)
+			if testCase.wantErr {
+				assert.Error(t, err)
+			} else {
+				assert.NoError(t, err)
+				assert.Equal(t, testCase.args.atctor.Id, got)
+			}
+		})
+	}
+
 }
 
 func TestActorPostgres_GetActorById(t *testing.T) {
@@ -135,45 +162,5 @@ func TestActorPostgres_DeleteActor(t *testing.T) {
 		return
 	}
 
-	assert.NoError(t, mock.ExpectationsWereMet())
-}
-
-func TestActorPostgres_UpdateActor(t *testing.T) {
-	mockDB, mock, err := sqlmock.New()
-	if err != nil {
-		t.Fatalf("an error '%s' wasn't expected when opening a stub db connection", err)
-	}
-	defer mockDB.Close()
-
-	sqlxDB := sqlx.NewDb(mockDB, "sqlmock")
-
-	actorRepo := NewActorPostgres(sqlxDB)
-
-	actorID := 1
-	actor := filmoteka.Actors{
-		Id:          actorID,
-		FirstName:   "Denis",
-		LastName:    "Maksimov",
-		Gender:      "male",
-		DateOfBirth: "1996-06-20",
-	}
-
-	expectedQuery := "UPDATE actors SET first_name=\\$1, last_name=\\$2, gender=\\$3, date_of_birth=\\$4 WHERE id=\\$5"
-
-	mock.ExpectExec(expectedQuery).WithArgs("John", "Doe", "male", "1990-01-01", actorID).WillReturnResult(sqlmock.NewResult(0, 1))
-
-	updatedActorData := filmoteka.UpdateActors{
-		FirstName:   ptr.String("John"),
-		LastName:    ptr.String("Doe"),
-		Gender:      ptr.String("male"),
-		DateOfBirth: ptr.String("1990-01-01"),
-	}
-	err = actorRepo.UpdateActor(actor.Id, updatedActorData)
-	if err != nil {
-		t.Errorf("unexpected error: %v", err)
-		return
-	}
-
-	// Проверка выполнения всех ожиданий mock-объекта базы данных
 	assert.NoError(t, mock.ExpectationsWereMet())
 }

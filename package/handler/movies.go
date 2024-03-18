@@ -48,13 +48,6 @@ func (h *Handler) handleCreateMovie(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userId, err := getUserId(r)
-	if err != nil {
-		logger.Log.Error("User ID not found:", err.Error())
-		NewErrorResponse(w, http.StatusUnauthorized, "user id not found")
-		return
-	}
-
 	var request movieRequest
 	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
 		logger.Log.Error("Failed to decaode request body:", err.Error())
@@ -84,7 +77,7 @@ func (h *Handler) handleCreateMovie(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	id, err := h.service.Movies.CreateMovie(userId, request.Movie, validateActorIDs)
+	id, err := h.service.Movies.CreateMovie(request.Movie, validateActorIDs)
 	if err != nil {
 		logger.Log.Error("Failed to create movie:", err.Error())
 		NewErrorResponse(w, http.StatusInternalServerError, err.Error())

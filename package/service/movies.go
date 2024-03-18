@@ -21,8 +21,8 @@ func NewMoviesWithActorsService(repo repository.MoviesWithActors) *MoviesWithAct
 	return &MoviesWithActorsService{repo: repo}
 }
 
-func (m *MovieService) CreateMovie(userId int, movie filmoteka.Movies, actorIDs []int) (int, error) {
-	return m.repo.CreateMovie(userId, movie, actorIDs)
+func (m *MovieService) CreateMovie(movie filmoteka.Movies, actorIDs []int) (int, error) {
+	return m.repo.CreateMovie(movie, actorIDs)
 }
 
 func (m *MoviesWithActorsService) GetMovies() ([]filmoteka.MoviesWithActors, error) {
