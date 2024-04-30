@@ -1,17 +1,6 @@
 version: '3.8'
 
 services:
-  vk-restapi:
-    build: ./
-    command: ./wait-for-postgres.sh db ./vk_restapi
-    ports:
-      - 8000:8000
-    depends_on:
-      - db
-    environment:
-      - DB_PASSWORD=admin
-
-
   db:
     restart: always
     image: postgres:latest
@@ -21,4 +10,16 @@ services:
     environment:
       - POSTGRES_PASSWORD=admin
     ports:
-      - 5436:5432
+      - 5420:5432
+  
+
+  vk-restapi:
+    restart: on-failure
+    build: ./
+    ports:
+      - 8000:8000
+    depends_on:
+      - db
+    environment:
+      - DB_PASSWORD=admin
+

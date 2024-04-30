@@ -7,8 +7,6 @@ COPY ./ ./
 
 RUN apk update && apk add --no-cache postgresql-client
 
-RUN chmod +x wait-for-postgres.sh
-
 RUN go mod download
 RUN go build -o vk_restapi ./cmd/main.go
 

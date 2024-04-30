@@ -4,7 +4,8 @@
 
 ## Интсрукция по установке и использованию
 - Для запуска приложения, необходимо из корневой директории проекта выполнить команду:  
-`git clone https://github.com/MaksimovDenis/vk_restAPI.git`  
+`git clone https://github.com/MaksimovDenis/vk_restAPI.git`
+`cd floodControl` (если вы не в корневой папке проекта)  
 `docker-compose build`  
 `docker-compose up`  
 - Команда запустит все контейнеры описанные в файле `docker-compose.yaml`, включая приложение и БД PostgreSQL.
